@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { invoke, isTauri } from "@tauri-apps/api/core";
-import { useTimeline } from "./hooks/useTimeline";
-import Timeline from "./components/Timeline";
+import ActivityDrawer from "./components/ActivityDrawer";
 import DailyReport from "./components/DailyReport";
+import ErrorBanner from "./components/ErrorBanner";
+import Timeline from "./components/Timeline";
+import { useTimeline } from "./hooks/useTimeline";
+import { logError } from "./lib/activityLog";
+import { formatUnknownError, truncateDetail } from "./lib/errors";
+import { playManualCaptureChime } from "./lib/sounds";
 
 export default function App() {
   const { snapshots, loading, processing } = useTimeline();
@@ -11,10 +16,16 @@ export default function App() {
 
   async function handleManualCapture() {
     if (!isTauri()) return;
+    void playManualCaptureChime();
     setCapturing(true);
     try {
       await invoke("take_screenshot");
     } catch (err) {
+      logError(
+        "app",
+        "Manual capture (Rust) failed",
+        truncateDetail(formatUnknownError(err)),
+      );
       console.error("Manual capture failed:", err);
     } finally {
       setCapturing(false);
@@ -24,6 +35,8 @@ export default function App() {
   return (
     <div className="flex h-screen flex-col bg-zinc-950">
       {/* header */}
+      <ErrorBanner />
+
       <header className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-3 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
@@ -41,6 +54,7 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ActivityDrawer />
           <button
             onClick={handleManualCapture}
             disabled={capturing}

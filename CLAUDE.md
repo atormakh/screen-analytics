@@ -12,7 +12,7 @@ Screenly is a Mac desktop app that captures a screenshot every 3 minutes and use
 - `src/` — React + TypeScript: UI (timeline, daily report), API calls to OpenAI and Notion
 - Storage: screenshots saved locally at `~/Library/Application Support/com.screenly.app/screenshots/`
 - DB: Notion API (one row per snapshot: timestamp, summary, local path)
-- AI: OpenAI GPT-4o mini Vision API
+- AI: Vercel AI Gateway (`/v1/chat/completions`), vision + text via `openai/gpt-4o-mini` (configurable)
 
 **Key files:**
 
@@ -31,7 +31,7 @@ Screenly is a Mac desktop app that captures a screenshot every 3 minutes and use
 ```bash
 # from repository root (this folder)
 bun install
-cp .env.example .env  # fill PUBLIC_OPENAI_API_KEY, PUBLIC_NOTION_API_KEY, PUBLIC_NOTION_DB_ID
+cp .env.example .env  # fill PUBLIC_AI_GATEWAY_API_KEY, PUBLIC_NOTION_API_KEY, PUBLIC_NOTION_DB_ID
 ```
 
 **Run dev:**

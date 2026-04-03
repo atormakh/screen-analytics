@@ -21,6 +21,11 @@
     {
       "identifier": "fs:allow-exists",
       "allow": [{ "path": "$APPDATA/**" }]
+    },
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [{ "url": "https://api.notion.com/*" }]
     }
   ]
 }

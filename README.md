@@ -1,6 +1,6 @@
 # Screen Analytics (Screenly)
 
-Mac desktop app (Tauri + React) that captures a screenshot every few minutes, summarizes activity with OpenAI vision, and syncs summaries to Notion. Includes an end-of-day AI report.
+Mac desktop app (Tauri + React) that captures a screenshot every few minutes, summarizes activity via **Vercel AI Gateway** (vision-capable models), and syncs summaries to Notion. Includes an end-of-day AI report.
 
 ## Quick start
 

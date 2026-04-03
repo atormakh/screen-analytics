@@ -1,9 +1,11 @@
-# OpenAI Prompts
+# AI prompts (via Vercel AI Gateway)
+
+Requests use `POST {PUBLIC_AI_GATEWAY_BASE_URL}/chat/completions` with Bearer `PUBLIC_AI_GATEWAY_API_KEY`. Default vision model: `openai/gpt-4o-mini` (override with `PUBLIC_AI_GATEWAY_MODEL_VISION`).
 
 ## Screenshot analysis prompt
 
-**Model:** `gpt-4o-mini`
-**Input:** screenshot as base64 PNG image
+**Default model:** `openai/gpt-4o-mini` (Gateway id)
+**Input:** screenshot as base64 PNG in `image_url` (`detail: auto`)
 
 ```
 System: You are a productivity assistant analyzing screenshots to track work activity.
@@ -18,7 +20,7 @@ Do not mention the user directly. Start with a verb.
 
 ## Daily report prompt
 
-**Model:** `gpt-4o-mini`
+**Default model:** `openai/gpt-4o-mini` (`PUBLIC_AI_GATEWAY_MODEL_TEXT`)
 **Input:** array of `{ timestamp, summary }` for the day, formatted as `[timestamp] summary` lines
 
 ```

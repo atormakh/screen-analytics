@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Markdown from "react-markdown";
 import type { Snapshot } from "../types";
+import { logError } from "../lib/activityLog";
+import { formatUnknownError, truncateDetail } from "../lib/errors";
 import { generateDailyReport } from "../lib/openai";
 import { saveDailyReport } from "../lib/notion";
 import { todayISO } from "../lib/storage";
@@ -24,6 +26,11 @@ export default function DailyReport({ snapshots, onClose }: Props) {
       );
       setReport(result);
     } catch (err) {
+      logError(
+        "pipeline",
+        "Daily report generation failed",
+        truncateDetail(formatUnknownError(err)),
+      );
       console.error("Failed to generate report:", err);
     } finally {
       setGenerating(false);
@@ -37,6 +44,11 @@ export default function DailyReport({ snapshots, onClose }: Props) {
       await saveDailyReport(todayISO(), report);
       setSaved(true);
     } catch (err) {
+      logError(
+        "pipeline",
+        "Saving daily report to Notion failed",
+        truncateDetail(formatUnknownError(err)),
+      );
       console.error("Failed to save report:", err);
     } finally {
       setSaving(false);

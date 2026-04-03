@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { isTauri } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { Snapshot, SnapshotPayload } from "../types";
+import { logError, logInfo, logSuccess } from "../lib/activityLog";
+import { formatUnknownError, truncateDetail } from "../lib/errors";
 import { analyzeScreenshot } from "../lib/openai";
 import { saveSnapshot, getSnapshots } from "../lib/notion";
 import { todayISO } from "../lib/storage";
@@ -19,6 +21,7 @@ export function useTimeline() {
       const data = await getSnapshots(today);
       setSnapshots(data);
     } catch (err) {
+      /* Notion layer already logged; keep console for devtools */
       console.error("Failed to fetch snapshots:", err);
     } finally {
       setLoading(false);
@@ -43,6 +46,11 @@ export function useTimeline() {
             const { path, timestamp } = event.payload;
 
             setProcessing(true);
+            logInfo(
+              "pipeline",
+              "New screenshot event — starting OpenAI → Notion",
+              `${timestamp} | ${path}`,
+            );
             try {
               const summary = await analyzeScreenshot(path);
               const dt = new Date(timestamp);
@@ -54,7 +62,18 @@ export function useTimeline() {
                 ...prev,
                 { timestamp, summary, path, tags: [] },
               ]);
+              logSuccess(
+                "pipeline",
+                "Snapshot processed and saved end-to-end",
+                `Notion title: ${title}`,
+              );
             } catch (err) {
+              const d = truncateDetail(formatUnknownError(err));
+              logError(
+                "pipeline",
+                "Snapshot pipeline failed (OpenAI and/or Notion)",
+                d,
+              );
               console.error("Failed to process snapshot:", err);
             } finally {
               setProcessing(false);
@@ -67,6 +86,11 @@ export function useTimeline() {
         }
         unlistenFn = unlisten;
       } catch (err) {
+        logError(
+          "app",
+          "Could not subscribe to snapshot-taken events",
+          truncateDetail(formatUnknownError(err)),
+        );
         console.error("Failed to register snapshot listener:", err);
       }
     })();

@@ -34,6 +34,8 @@
 
 | Variable | Used in |
 |---|---|
-| `PUBLIC_OPENAI_API_KEY` | `src/lib/openai.ts` |
+| `PUBLIC_AI_GATEWAY_API_KEY` | `src/lib/openai.ts` (Gateway OpenAI-compatible API) |
+| `PUBLIC_AI_GATEWAY_BASE_URL` | optional; default `https://ai-gateway.vercel.sh/v1` |
+| `PUBLIC_AI_GATEWAY_MODEL_VISION` / `_TEXT` | optional model ids (e.g. `openai/gpt-4o-mini`) |
 | `PUBLIC_NOTION_API_KEY` | `src/lib/notion.ts` |
 | `PUBLIC_NOTION_DB_ID` | `src/lib/notion.ts` |

@@ -10,9 +10,13 @@ use tauri::Manager;
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
         .invoke_handler(tauri::generate_handler![
             commands::take_screenshot,
             commands::get_screenshots_dir,
+            commands::append_activity_line,
+            commands::get_activity_log_path,
+            commands::open_logs_folder,
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();
