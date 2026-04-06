@@ -13,7 +13,7 @@ function notify() {
 function dispatchErrorEvent(entry: ActivityEntry) {
   if (entry.level === "error") {
     window.dispatchEvent(
-      new CustomEvent<ActivityEntry>("screenly-activity-error", { detail: entry }),
+      new CustomEvent<ActivityEntry>("screendiary-activity-error", { detail: entry }),
     );
   }
 }

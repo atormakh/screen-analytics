@@ -1,6 +1,6 @@
 {
   "identifier": "default",
-  "description": "Default capabilities for Screenly",
+  "description": "Default capabilities for Screendiary",
   "windows": ["main"],
   "remote": {
     "urls": [

@@ -2,17 +2,17 @@
 
 ## WHY
 
-Screenly is a Mac desktop app that captures a screenshot every 3 minutes and uses AI vision to summarize what the user was doing. At end of day, summaries are aggregated into a daily activity report. All data stays local; only summaries are written to Notion.
+Screendiary is a Mac desktop app that captures a screenshot every 3 minutes and uses AI vision to summarize what the user was doing. At end of day, summaries are aggregated into a daily activity report. All data stays local; only summaries are written to Notion.
 
 ## WHAT
 
 **Stack:**
 
 - `src-tauri/` — Rust: screenshot capture (macOS `screencapture` CLI), 3-min scheduler (std::thread), Tauri commands
-- `src/` — React + TypeScript: UI (timeline, daily report), API calls to OpenAI and Notion
-- Storage: screenshots saved locally at `~/Library/Application Support/com.screenly.app/screenshots/`
+- `src/` — React 19 + TypeScript, **Mantine 9** UI, **Tailwind 4** + **@tailwindcss/typography** (daily report markdown), **Rsbuild**: timeline, modals, Notion/AI clients
+- Storage: screenshots saved locally at `~/Library/Application Support/com.screendiary.app/screenshots/`
 - DB: Notion API (one row per snapshot: timestamp, summary, local path)
-- AI: Vercel AI Gateway (`/v1/chat/completions`), vision + text via `openai/gpt-4o-mini` (configurable)
+- AI: Vercel AI Gateway (`/v1/chat/completions`), default models `google/gemini-3-flash` (configurable via `PUBLIC_AI_GATEWAY_MODEL_`*)
 
 **Key files:**
 

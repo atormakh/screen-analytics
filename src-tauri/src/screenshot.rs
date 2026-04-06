@@ -51,7 +51,7 @@ pub fn capture_screenshot(screenshots_dir: &PathBuf, trigger: &str) -> Result<Ca
             ),
         );
         let hint = if stderr.contains("could not create image") {
-            " On macOS: System Settings → Privacy & Security → Screen Recording → enable Terminal, Cursor, or Screenly (the app that launched this process), then quit and reopen the app."
+            " On macOS: System Settings → Privacy & Security → Screen Recording → enable Terminal, Cursor, or Screendiary (the app that launched this process), then quit and reopen the app."
         } else {
             ""
         };

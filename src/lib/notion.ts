@@ -126,11 +126,10 @@ export async function getSnapshots(
   }
 
   const data = await response.json();
-  const results = data.results as unknown[] | undefined;
-  const n = results?.length ?? 0;
-  logSuccess("notion", "Notion query completed", `${n} row(s) for ${date}`);
+  const results = (data.results as unknown[] | undefined) ?? [];
+  logSuccess("notion", "Notion query completed", `${results.length} row(s) for ${date}`);
 
-  return data.results.map((page: Record<string, any>) => {
+  return results.map((page: Record<string, any>) => {
     const props = page.properties ?? {};
     return {
       timestamp: props[PROP_TIMESTAMP]?.date?.start || "",

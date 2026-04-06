@@ -1,6 +1,6 @@
 # Notion DB Schema
 
-## Database: Screenly Snapshots
+## Database: Screendiary Snapshots
 
 | Property | Type | Notes |
 |---|---|---|
@@ -17,7 +17,7 @@ await saveSnapshot({
   title: '2026-04-02 10:03',
   summary: 'Reviewing a pull request on GitHub for a Rust project.',
   timestamp: '2026-04-02T10:03:00-03:00',
-  localPath: '/Users/agus/Library/Application Support/com.screenly.app/screenshots/2026-04-02_10-03-00.png',
+  localPath: '/Users/agus/Library/Application Support/com.screendiary.app/screenshots/2026-04-02_10-03-00.png',
   tags: ['coding', 'github']
 })
 ```

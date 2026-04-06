@@ -1,5 +1,5 @@
 {
-  "name": "screenly",
+  "name": "screendiary",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -10,6 +10,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@mantine/core": "^9.0.0",
+    "@mantine/hooks": "^9.0.0",
+    "@tabler/icons-react": "^3.41.1",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-fs": "^2",
     "@tauri-apps/plugin-http": "^2",
@@ -21,10 +24,13 @@
     "@rsbuild/core": "^1",
     "@rsbuild/plugin-react": "^1",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.19",
     "@tauri-apps/cli": "^2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

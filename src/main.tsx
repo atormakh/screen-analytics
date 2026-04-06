@@ -1,10 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
 import App from "./App";
+import { screendiaryTheme } from "./theme/mantine-theme";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <MantineProvider theme={screendiaryTheme} defaultColorScheme="dark">
+      <App />
+    </MantineProvider>
   </React.StrictMode>,
 );
