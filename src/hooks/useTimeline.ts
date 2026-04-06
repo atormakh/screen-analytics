@@ -52,20 +52,20 @@ export function useTimeline() {
               `${timestamp} | ${path}`,
             );
             try {
-              const summary = await analyzeScreenshot(path);
+              const { summary, tags } = await analyzeScreenshot(path);
               const dt = new Date(timestamp);
               const title = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")} ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
 
-              await saveSnapshot({ title, summary, timestamp, localPath: path });
+              await saveSnapshot({ title, summary, timestamp, localPath: path, tags });
 
               setSnapshots((prev) => [
                 ...prev,
-                { timestamp, summary, path, tags: [] },
+                { timestamp, summary, path, tags },
               ]);
               logSuccess(
                 "pipeline",
                 "Snapshot processed and saved end-to-end",
-                `Notion title: ${title}`,
+                `Notion title: ${title} · tags: ${tags.join(", ") || "none"}`,
               );
             } catch (err) {
               const d = truncateDetail(formatUnknownError(err));

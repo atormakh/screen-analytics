@@ -41,7 +41,12 @@ async function toBase64(bytes: Uint8Array): Promise<string> {
   });
 }
 
-export async function analyzeScreenshot(path: string): Promise<string> {
+export interface ScreenshotAnalysis {
+  summary: string;
+  tags: string[];
+}
+
+export async function analyzeScreenshot(path: string): Promise<ScreenshotAnalysis> {
   assertGatewayKey();
   logInfo("ai-gateway", "Vision request started", `file: ${path}`);
 
@@ -73,30 +78,59 @@ export async function analyzeScreenshot(path: string): Promise<string> {
       messages: [
         {
           role: "system",
-          content:
-            "You are a productivity assistant analyzing screenshots to track work activity.",
+          content: `You are a productivity assistant that analyzes screenshots to create a detailed activity log. Your summaries will be aggregated into a daily report, so they must be specific and information-rich — capturing exactly what was being worked on, in which app, on which project, and any other visible context. Never be vague or generic.
+
+You MUST respond with valid JSON matching this schema:
+{
+  "summary": "2-4 sentence description of the activity",
+  "tags": ["tag1", "tag2", "tag3", ...]
+}`,
         },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: `Look at this screenshot and describe in 1-2 sentences what the user is doing.
-Be specific: mention the app, the task, and the context if visible.
-Examples: "Reviewing a pull request on GitHub for a Rust project."
-Do not mention the user directly. Start with a verb.`,
+              text: `Analyze this screenshot in detail. Respond with a JSON object containing "summary" and "tags".
+
+## Summary (2-4 sentences)
+Include ALL of the following that are visible:
+- The application or website in use (name it precisely)
+- The specific task or action happening (e.g. writing code, reading docs, reviewing a PR, chatting, browsing)
+- Project or file names, repo names, branch names, document titles visible in tabs or title bars
+- Key content on screen: code being written, message being typed, article being read, form being filled
+- Any secondary context: other visible tabs, sidebar items, terminal output, notifications
+
+Be concrete and information-dense. Prefer specifics over generalities.
+BAD: "Working in a code editor."
+GOOD: "Editing the analyzeScreenshot function in src/lib/openai.ts within VS Code, modifying the prompt template for the Screendiary project. A terminal panel is open showing a running dev server."
+
+Do not mention the user directly. Start with a verb in present progressive (e.g. "Editing…", "Reviewing…", "Browsing…").
+
+## Tags (3-7 tags, lowercase kebab-case)
+Generate specific, multi-dimensional tags from these categories:
+1. **App**: the exact app or site (e.g. "vscode", "cursor", "chrome", "slack", "figma", "notion", "terminal", "safari", "discord", "github")
+2. **Activity**: what's being done (e.g. "coding", "debugging", "code-review", "reading-docs", "chatting", "browsing", "writing", "designing", "email", "video-call")
+3. **Project/repo**: the project name if visible (e.g. "screendiary", "my-api", "company-dashboard")
+4. **Technology**: languages or frameworks visible (e.g. "typescript", "rust", "react", "python", "tailwind")
+5. **Domain**: area of work (e.g. "frontend", "backend", "devops", "design", "product", "infrastructure")
+
+Only include tags you can confidently identify from the screenshot. Prefer specific tags over generic ones.
+BAD tags: ["work", "computer", "screen"]
+GOOD tags: ["cursor", "coding", "screendiary", "typescript", "frontend"]`,
             },
             {
               type: "image_url",
               image_url: {
                 url: `data:image/png;base64,${base64}`,
-                detail: "auto",
+                detail: "high",
               },
             },
           ],
         },
       ],
-      max_tokens: 150,
+      max_tokens: 500,
+      response_format: { type: "json_object" },
     }),
   });
 
@@ -118,12 +152,25 @@ Do not mention the user directly. Start with a verb.`,
     throw new Error("AI Gateway returned an empty summary");
   }
 
+  let parsed: { summary?: string; tags?: string[] };
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    logError("ai-gateway", "Failed to parse JSON from vision response", truncateDetail(content, 500));
+    return { summary: content, tags: [] };
+  }
+
+  const summary = parsed.summary?.trim() || content;
+  const tags = Array.isArray(parsed.tags)
+    ? parsed.tags.filter((t): t is string => typeof t === "string" && t.length > 0)
+    : [];
+
   logSuccess(
     "ai-gateway",
-    "Vision summary received",
-    truncateDetail(content, 500),
+    "Vision analysis received",
+    `${tags.length} tags · ${truncateDetail(summary, 300)}`,
   );
-  return content;
+  return { summary, tags };
 }
 
 export async function generateDailyReport(
