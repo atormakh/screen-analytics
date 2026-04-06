@@ -41,6 +41,47 @@ async function toBase64(bytes: Uint8Array): Promise<string> {
   });
 }
 
+/** Model wrappers often add ```json fences; strip so JSON.parse sees `{`. */
+function stripMarkdownCodeFences(text: string): string {
+  return text
+    .replace(/^\s*```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
+    .trim();
+}
+
+/**
+ * When the model hits max_tokens mid-JSON, JSON.parse fails and we must not surface raw JSON to the user.
+ * Extracts the summary string value (handles escapes; supports truncated output with no closing quote).
+ */
+function extractSummaryJsonString(content: string): string | null {
+  const key = '"summary"';
+  const idx = content.indexOf(key);
+  if (idx < 0) return null;
+  const afterKey = content.slice(idx + key.length);
+  const m = afterKey.match(/^\s*:\s*"/);
+  if (!m) return null;
+  let i = idx + key.length + m[0].length;
+  let out = "";
+  while (i < content.length) {
+    const c = content[i];
+    if (c === "\\" && i + 1 < content.length) {
+      const n = content[i + 1];
+      if (n === "n") out += "\n";
+      else if (n === "r") out += "\r";
+      else if (n === "t") out += "\t";
+      else if (n === '"' || n === "\\" || n === "/") out += n;
+      else out += n;
+      i += 2;
+      continue;
+    }
+    if (c === '"') break;
+    out += c;
+    i++;
+  }
+  const trimmed = out.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 export interface ScreenshotAnalysis {
   summary: string;
   tags: string[];
@@ -129,7 +170,8 @@ GOOD tags: ["cursor", "coding", "screendiary", "typescript", "frontend"]`,
           ],
         },
       ],
-      max_tokens: 500,
+      // Detailed JSON summaries + tags need headroom; 500 often truncates mid-string and yields broken UX.
+      max_tokens: 1536,
     }),
   });
 
@@ -151,18 +193,35 @@ GOOD tags: ["cursor", "coding", "screendiary", "typescript", "frontend"]`,
     throw new Error("AI Gateway returned an empty summary");
   }
 
+  const normalized = stripMarkdownCodeFences(content.trim());
+
   let parsed: { summary?: string; tags?: string[] };
   try {
-    // Gemini may wrap JSON in markdown code fences or add surrounding text
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    const jsonStr = jsonMatch ? jsonMatch[0] : content;
+    const jsonMatch = normalized.match(/\{[\s\S]*\}/);
+    const jsonStr = jsonMatch ? jsonMatch[0] : normalized;
     parsed = JSON.parse(jsonStr);
   } catch {
-    logError("ai-gateway", "Failed to parse JSON from vision response", truncateDetail(content, 500));
-    return { summary: content, tags: [] };
+    const extracted = extractSummaryJsonString(normalized);
+    logError(
+      "ai-gateway",
+      "Failed to parse JSON from vision response; using extracted summary if any",
+      truncateDetail(normalized, 500),
+    );
+    if (extracted) {
+      return { summary: extracted, tags: [] };
+    }
+    // Model ignored JSON and returned plain text — keep it
+    if (!/"summary"\s*:/i.test(normalized)) {
+      return { summary: normalized, tags: [] };
+    }
+    return {
+      summary:
+        "Could not parse the model response (likely truncated). Try again or increase vision max tokens.",
+      tags: [],
+    };
   }
 
-  const summary = parsed.summary?.trim() || content;
+  const summary = parsed.summary?.trim() || extractSummaryJsonString(normalized) || normalized;
   const tags = Array.isArray(parsed.tags)
     ? parsed.tags.filter((t): t is string => typeof t === "string" && t.length > 0)
     : [];
