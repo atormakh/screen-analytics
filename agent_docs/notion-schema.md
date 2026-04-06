@@ -2,13 +2,15 @@
 
 ## Database: Screendiary Snapshots
 
-| Property | Type | Notes |
-|---|---|---|
-| `Name` | Title | Auto: `YYYY-MM-DD HH:mm` |
-| `Summary` | Rich text | AI-generated activity description |
-| `Timestamp` | Date | Exact capture datetime (ISO 8601) |
-| `Path` | Rich text | Absolute local path to `.png` file |
-| `Tags` | Multi-select | Optional: auto-tagged by AI (e.g. "coding", "email") |
+
+| Property    | Type         | Notes                                                |
+| ----------- | ------------ | ---------------------------------------------------- |
+| `Name`      | Title        | Auto: `YYYY-MM-DD HH:mm`                             |
+| `Summary`   | Rich text    | AI-generated activity description                    |
+| `Timestamp` | Date         | Exact capture datetime (ISO 8601)                    |
+| `Path`      | Rich text    | Absolute local path to `.png` file                   |
+| `Tags`      | Multi-select | Optional: auto-tagged by AI (e.g. "coding", "email") |
+
 
 ## saveSnapshot() call shape
 
@@ -39,3 +41,4 @@ await saveDailyReport('2026-04-02', markdownContent)
 // Creates a page with Name: "Daily Report — 2026-04-02"
 // Tags: ["daily-report"]
 ```
+

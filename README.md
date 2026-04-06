@@ -1,6 +1,8 @@
 # Screendiary
 
-
+<p align="center">
+  <img src="assets/banner.png" alt="Screendiary — screenshot → AI summary → Notion" width="720" />
+</p>
 
 A **macOS** desktop app ([Tauri](https://tauri.app/) + React) that captures a fullscreen screenshot **every 3 minutes**, sends it to a **vision-capable model** via the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway), and stores **short text summaries** in **Notion**—one row per capture. You also get an **end-of-day AI report** built from that day’s snapshots.
 
@@ -9,6 +11,7 @@ Screenshots stay on your machine; Notion only receives the summary text and the 
 **UI:** [Mantine](https://mantine.dev/) 9, [Tailwind CSS](https://tailwindcss.com/) 4 + [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography), [Rsbuild](https://rsbuild.rs/).
 
 ---
+hola
 
 ## Requirements
 
