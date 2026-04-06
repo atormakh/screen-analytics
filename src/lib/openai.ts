@@ -130,7 +130,6 @@ GOOD tags: ["cursor", "coding", "screendiary", "typescript", "frontend"]`,
         },
       ],
       max_tokens: 500,
-      response_format: { type: "json_object" },
     }),
   });
 
@@ -154,7 +153,10 @@ GOOD tags: ["cursor", "coding", "screendiary", "typescript", "frontend"]`,
 
   let parsed: { summary?: string; tags?: string[] };
   try {
-    parsed = JSON.parse(content);
+    // Gemini may wrap JSON in markdown code fences or add surrounding text
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const jsonStr = jsonMatch ? jsonMatch[0] : content;
+    parsed = JSON.parse(jsonStr);
   } catch {
     logError("ai-gateway", "Failed to parse JSON from vision response", truncateDetail(content, 500));
     return { summary: content, tags: [] };
