@@ -11,8 +11,6 @@ Screenshots stay on your machine; Notion only receives the summary text and the 
 **UI:** [Mantine](https://mantine.dev/) 9, [Tailwind CSS](https://tailwindcss.com/) 4 + [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography), [Rsbuild](https://rsbuild.rs/).
 
 ---
-hola
-
 ## Requirements
 
 - **macOS** (the capture path uses the system `screencapture` CLI)
