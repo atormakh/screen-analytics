@@ -1,14 +1,16 @@
 # Notion DB Schema
 
-## Database: Screenly Snapshots
+## Database: Screendiary Snapshots
 
-| Property | Type | Notes |
-|---|---|---|
-| `Name` | Title | Auto: `YYYY-MM-DD HH:mm` |
-| `Summary` | Rich text | AI-generated activity description |
-| `Timestamp` | Date | Exact capture datetime (ISO 8601) |
-| `Path` | Rich text | Absolute local path to `.png` file |
-| `Tags` | Multi-select | Optional: auto-tagged by AI (e.g. "coding", "email") |
+
+| Property    | Type         | Notes                                                |
+| ----------- | ------------ | ---------------------------------------------------- |
+| `Name`      | Title        | Auto: `YYYY-MM-DD HH:mm`                             |
+| `Summary`   | Rich text    | AI-generated activity description                    |
+| `Timestamp` | Date         | Exact capture datetime (ISO 8601)                    |
+| `Path`      | Rich text    | Absolute local path to `.png` file                   |
+| `Tags`      | Multi-select | Optional: auto-tagged by AI (e.g. "coding", "email") |
+
 
 ## saveSnapshot() call shape
 
@@ -17,7 +19,7 @@ await saveSnapshot({
   title: '2026-04-02 10:03',
   summary: 'Reviewing a pull request on GitHub for a Rust project.',
   timestamp: '2026-04-02T10:03:00-03:00',
-  localPath: '/Users/agus/Library/Application Support/com.screenly.app/screenshots/2026-04-02_10-03-00.png',
+  localPath: '/Users/agus/Library/Application Support/com.screendiary.app/screenshots/2026-04-02_10-03-00.png',
   tags: ['coding', 'github']
 })
 ```
@@ -39,3 +41,4 @@ await saveDailyReport('2026-04-02', markdownContent)
 // Creates a page with Name: "Daily Report — 2026-04-02"
 // Tags: ["daily-report"]
 ```
+

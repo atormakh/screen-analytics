@@ -1,9 +1,7 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-  color: #f4f4f5;
-  background-color: #09090b;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -16,6 +14,11 @@
 
 body {
   min-height: 100vh;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fafafa;
 }
 
 ::-webkit-scrollbar {

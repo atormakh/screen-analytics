@@ -1,3 +1,4 @@
+import { Box, Button, Center, Group, Loader, Modal, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import Markdown from "react-markdown";
 import type { Snapshot } from "../types";
@@ -56,72 +57,69 @@ export default function DailyReport({ snapshots, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="mx-4 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl">
-        {/* header */}
-        <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-          <h2 className="text-sm font-semibold text-zinc-100">Daily Report</h2>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          {!report && !generating && (
-            <div className="flex flex-col items-center gap-4 py-12 text-center">
-              <p className="text-sm text-zinc-400">
+    <Modal
+      opened
+      onClose={onClose}
+      title="Daily report"
+      size="xl"
+      centered
+      overlayProps={{ backgroundOpacity: 0.55, blur: 4 }}
+      styles={{
+        body: { maxHeight: "min(85vh, 720px)", display: "flex", flexDirection: "column" },
+      }}
+    >
+      <Stack gap="md" style={{ flex: 1, minHeight: 0 }}>
+        {!report && !generating ? (
+          <Center py="xl">
+            <Stack align="center" gap="md" maw={360}>
+              <Text size="sm" c="dimmed" ta="center">
                 Generate an AI summary of your {snapshots.length} snapshots from
                 today.
-              </p>
-              <button
-                onClick={handleGenerate}
-                className="rounded-lg bg-violet-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500"
-              >
-                Generate Report
-              </button>
-            </div>
-          )}
+              </Text>
+              <Button onClick={handleGenerate}>Generate report</Button>
+            </Stack>
+          </Center>
+        ) : null}
 
-          {generating && (
-            <div className="flex items-center justify-center gap-3 py-12 text-zinc-500">
-              <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Generating report...
-            </div>
-          )}
+        {generating ? (
+          <Center py="xl">
+            <Group gap="sm" c="dimmed">
+              <Loader size="sm" type="oval" />
+              <Text size="sm">Generating report…</Text>
+            </Group>
+          </Center>
+        ) : null}
 
-          {report && (
-            <div className="prose prose-invert prose-sm max-w-none prose-headings:text-zinc-200 prose-p:text-zinc-300 prose-strong:text-zinc-200 prose-li:text-zinc-300">
+        {report ? (
+          <Stack gap="sm" style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+            <Box
+              component="article"
+              className="prose prose-zinc prose-invert prose-sm max-w-none prose-headings:text-zinc-200 prose-p:text-zinc-300 prose-strong:text-zinc-200 prose-li:text-zinc-300 prose-a:text-violet-400 prose-code:text-zinc-300"
+            >
               <Markdown>{report}</Markdown>
-            </div>
-          )}
-        </div>
+            </Box>
+          </Stack>
+        ) : null}
 
-        {/* footer */}
-        {report && (
-          <div className="flex items-center justify-end gap-3 border-t border-zinc-800 px-6 py-4">
+        {report ? (
+          <Group justify="flex-end" pt="sm" style={{ borderTop: "1px solid var(--mantine-color-dark-4)" }}>
             {saved ? (
-              <span className="text-xs text-emerald-400">Saved to Notion</span>
+              <Text size="xs" c="green">
+                Saved to Notion
+              </Text>
             ) : (
-              <button
+              <Button
+                variant="light"
+                size="xs"
                 onClick={handleSaveToNotion}
                 disabled={saving}
-                className="rounded-lg border border-zinc-700 px-4 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-800 disabled:opacity-50"
               >
-                {saving ? "Saving..." : "Save to Notion"}
-              </button>
+                {saving ? "Saving…" : "Save to Notion"}
+              </Button>
             )}
-          </div>
-        )}
-      </div>
-    </div>
+          </Group>
+        ) : null}
+      </Stack>
+    </Modal>
   );
 }

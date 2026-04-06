@@ -1,3 +1,5 @@
+import { Badge, Box, Button, Group, Stack, Text, ThemeIcon, Title } from "@mantine/core";
+import { IconCamera } from "@tabler/icons-react";
 import { useState } from "react";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import ActivityDrawer from "./components/ActivityDrawer";
@@ -33,59 +35,100 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-zinc-950">
-      {/* header */}
+    <Box
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background:
+          "radial-gradient(ellipse 120% 80% at 50% -20%, rgba(109, 40, 217, 0.12), transparent), var(--mantine-color-dark-9)",
+      }}
+    >
       <ErrorBanner />
 
-      <header className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-3 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-600">
-            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-            </svg>
-          </div>
-          <h1 className="text-sm font-semibold tracking-tight text-zinc-100">
-            Screenly
-          </h1>
-          <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
-            {snapshots.length} snapshots
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <ActivityDrawer />
-          <button
-            onClick={handleManualCapture}
-            disabled={capturing}
-            className="rounded-lg border border-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200 disabled:opacity-50"
+      <Box
+        component="header"
+        px="md"
+        py="sm"
+        style={{
+          borderBottom: "1px solid var(--mantine-color-dark-4)",
+          background: "rgba(9, 9, 11, 0.92)",
+          backdropFilter: "blur(12px)",
+          flexShrink: 0,
+        }}
+      >
+        <Group justify="space-between" gap="md" wrap="nowrap">
+          <Group
+            gap="sm"
+            wrap="nowrap"
+            className="min-w-0 flex-1"
+            py={4}
+            px={4}
+            style={{ borderRadius: 8, marginLeft: -4 }}
+            {...{ "data-tauri-drag-region": true }}
           >
-            {capturing ? "Capturing..." : "Capture Now"}
-          </button>
-          <button
-            onClick={() => setShowReport(true)}
-            disabled={snapshots.length === 0}
-            className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-500 disabled:opacity-40"
-          >
-            Generate Report
-          </button>
-        </div>
-      </header>
+            <ThemeIcon
+              size={36}
+              radius="md"
+              variant="gradient"
+              gradient={{ from: "violet.6", to: "violet.8", deg: 135 }}
+              style={{ boxShadow: "0 8px 24px rgba(109, 40, 217, 0.25)" }}
+            >
+              <IconCamera size={20} stroke={1.75} />
+            </ThemeIcon>
+            <Stack gap={0} className="min-w-0">
+              <Title order={1} size="h5" fw={600} lineHeight={1.2}>
+                Screendiary
+              </Title>
+              <Text size="xs" c="dimmed" truncate>
+                Activity timeline · Notion sync
+              </Text>
+            </Stack>
+            <Badge
+              variant="light"
+              color="gray"
+              size="sm"
+              radius="xl"
+              className="shrink-0"
+              styles={{ label: { fontVariantNumeric: "tabular-nums" } }}
+            >
+              {snapshots.length} shots
+            </Badge>
+          </Group>
 
-      {/* main */}
+          <Group gap="xs" wrap="nowrap" className="shrink-0">
+            <ActivityDrawer />
+            <Button
+              variant="default"
+              size="xs"
+              onClick={handleManualCapture}
+              disabled={capturing}
+            >
+              {capturing ? "Capturing…" : "Capture now"}
+            </Button>
+            <Button
+              size="xs"
+              onClick={() => setShowReport(true)}
+              disabled={snapshots.length === 0}
+            >
+              Daily report
+            </Button>
+          </Group>
+        </Group>
+      </Box>
+
       <Timeline
         snapshots={snapshots}
         loading={loading}
         processing={processing}
       />
 
-      {/* daily report modal */}
-      {showReport && (
+      {showReport ? (
         <DailyReport
           snapshots={snapshots}
           onClose={() => setShowReport(false)}
         />
-      )}
-    </div>
+      ) : null}
+    </Box>
   );
 }
